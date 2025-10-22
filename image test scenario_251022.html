@@ -1,0 +1,420 @@
+<!-- Chosen Palette: Warm Neutrals & Muted Teal Accent (Off-white background, soft gray text, muted teal for primary emphasis) -->
+<!-- Application Structure Plan: Three-Pillar Interactive Dashboard. Structure includes a Header, a Comparative Toggles section (Quant vs Qual), a Dynamic Scoring Chart, and an Exploration Pane with two tabs (Technical Benchmarks and Subjective Perception Mapping). This structure was chosen because the report's core message is the 80% Qualitative weighting and the three phases (Quant, Stability, Qual) of the process. The dashboard approach allows users to immediately grasp the weightings and then explore the detailed methodology in depth. -->
+<!-- Visualization & Content Choices: Summary: Pillar Weighting -> Goal: Inform -> Viz/Presentation Method: Donut Chart -> Interaction: Hover -> Justification: Instantly conveys 80% qualitative importance. Library/Method: Chart.js. Comparison (Quant vs Qual) -> Goal: Compare -> Viz/Presentation Method: Tabbed Content -> Interaction: Click Toggles -> Justification: Efficiently contrasts dense text. Library/Method: HTML/JS. Timeline -> Goal: Organize -> Viz/Presentation Method: Stepper/Flow Diagram -> Interaction: Click to expand details -> Justification: Shows the 30-day process flow clearly. Library/Method: HTML/Tailwind/JS. Perception Mapping -> Goal: Relationship -> Viz/Presentation Method: Interactive Accordion/Table -> Interaction: Click on factor to reveal language -> Justification: Visualizes the crucial gap between objective and subjective language. Library/Method: HTML/JS. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화질 평가 방법론 인터랙티브 브리핑</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f7f5; }
+        .chart-wrapper { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-wrapper { height: 400px; } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Header & Core Philosophy -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold text-[#1f2937] mb-2">화질 평가 방법론 및 핵심 원칙 종합 브리핑</h1>
+            <p class="text-lg text-[#4b5563] italic">객관적 성능과 사용자 체감 만족도의 통합 관리 프레임워크</p>
+        </header>
+
+        <!-- Summary and Scoring Focus -->
+        <section class="bg-white p-6 rounded-xl shadow-lg mb-10 border-t-4 border-teal-500">
+            <h2 class="text-2xl font-bold text-teal-600 mb-4">💡 핵심 철학: 정량(Quant)과 정성(Qual)의 통합</h2>
+            <p class="text-[#374151] mb-6">
+                최상의 화질은 기술적 수치(정량)를 넘어, 실제 사용자가 인지하는 만족도(정성)를 포함해야만 달성됩니다.
+                이 프레임워크는 두 평가 방식이 상호 보완적이라는 인식 하에 구축되었으며, 
+                특히 최종 품질 판정에서 **정성적 평가가 80%**의 압도적인 가중치를 차지하는 것이 특징입니다.
+            </p>
+
+            <div class="md:flex md:space-x-8 items-center">
+                
+                <!-- Chart: Scoring Breakdown -->
+                <div class="md:w-1/2 chart-wrapper">
+                    <canvas id="scoringChart"></canvas>
+                </div>
+
+                <!-- Qualitative Insight -->
+                <div class="md:w-1/2 mt-6 md:mt-0 p-4 border-l-4 border-gray-100">
+                    <h3 class="text-xl font-semibold text-[#1f2937] mb-2">⭐ 사용자 만족도(정성) 80%의 의미</h3>
+                    <ul class="space-y-3 text-gray-600 list-inside">
+                        <li class="flex items-start">
+                            <span class="text-teal-500 mr-2 text-lg">✦</span>
+                            <span class="flex-1">기술적 수치보다 **실제 사용 환경에서의 체감 품질**이 제품 성공의 핵심입니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-500 mr-2 text-lg">✦</span>
+                            <span class="flex-1">학술적 연구는 사용자가 복잡한 요소를 **'선명하다', '뚜렷하다'**와 같은 소수의 언어로 통합 인지함을 보여줍니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-teal-500 mr-2 text-lg">✦</span>
+                            <span class="flex-1">이 가중치는 정성 평가 단계(야외 촬영 및 블라인드 테스트)의 중요성을 강조합니다.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Comparison Section -->
+        <section class="bg-white p-6 rounded-xl shadow-lg mb-10">
+            <h2 class="text-2xl font-bold text-[#1f2937] mb-4">📊 정량 vs. 정성 평가 이원적 접근 상세 비교</h2>
+            <p class="text-[#4b5563] mb-6">아래 토글을 사용하여 두 평가 방식의 목적, 방법, 장단점을 비교해 보세요. 이 둘은 최적의 화질을 위해 반드시 함께 사용되어야 합니다.</p>
+            
+            <div class="flex space-x-2 mb-6">
+                <button id="btnQuant" class="px-6 py-2 rounded-lg font-semibold transition-colors bg-teal-500 text-white hover:bg-teal-600">
+                    정량적 평가 (객관적 성능)
+                </button>
+                <button id="btnQual" class="px-6 py-2 rounded-lg font-semibold transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
+                    정성적 평가 (사용자 체감)
+                </button>
+            </div>
+
+            <div id="comparisonContent" class="p-4 border border-gray-100 rounded-lg">
+                <!-- Content will be injected here -->
+            </div>
+        </section>
+
+        <!-- Exploration Pane: Process Flow, Metrics, and Perception -->
+        <section class="mb-10">
+            <h2 class="text-2xl font-bold text-[#1f2937] mb-6">🔬 화질 평가 프로세스 및 구성 요소 심층 분석</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- 1. Process Timeline -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-teal-600 mb-4">① 30일 표준 시험 소요 기간</h3>
+                    <p class="text-sm text-gray-500 mb-4">기초 성능 확보부터 최종 승인까지의 단계별 기간 (Working Days)</p>
+                    <div id="timelineContainer" class="space-y-4">
+                        <!-- Timeline steps generated by JS -->
+                    </div>
+                </div>
+
+                <!-- 2. Technical Benchmarks & Perception Mapping -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex space-x-4 border-b border-gray-200 mb-4">
+                        <button id="tabMetrics" class="tab-button pb-3 font-semibold text-gray-700 border-b-2 border-teal-500 transition-colors">
+                            정량 평가 기준 (암실 측정)
+                        </button>
+                        <button id="tabPerception" class="tab-button pb-3 font-semibold text-gray-500 border-b-2 border-transparent hover:border-gray-300 transition-colors">
+                            주관적 화질 인식 분석 (언어)
+                        </button>
+                    </div>
+
+                    <!-- Tab Content Container -->
+                    <div id="tabContent">
+                        
+                        <!-- Content for Metrics Tab (Default) -->
+                        <div id="metricsView" class="space-y-4">
+                            <p class="text-[#4b5563] text-sm">통제된 환경에서 측정되는 핵심 성능 지표입니다. 모든 화질 튜닝의 기초 체력이 됩니다.</p>
+                            
+                            <div id="metricsTableContainer" class="overflow-x-auto">
+                                <!-- Metrics Table generated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Content for Perception Tab (Hidden initially) -->
+                        <div id="perceptionView" class="hidden space-y-4">
+                            <p class="text-[#4b5563] text-sm">객관적 품질 요소 개선이 사용자에게 **'선명하다', '뚜렷하다'**와 같은 총체적인 언어로 어떻게 인지되는지 보여줍니다. (클릭하여 확인)</p>
+
+                            <div id="perceptionAccordion" class="space-y-3">
+                                <!-- Accordions generated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+        <!-- Footer / Conclusion -->
+        <footer class="mt-10 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
+            <h3 class="text-lg font-semibold mb-2 text-teal-600">결론 및 프레임워크 보장</h3>
+            <p>본 제안은 VMS 개발 및 검증 효율성 극대화를 목표로 하며, 정성적 평가(80%)의 높은 가중치를 통해 **기술적 완벽성**과 **사용자 체감 만족도**라는 두 마리 토끼를 모두 확보하는 체계적인 품질 관리 프레임워크를 보장합니다.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Chart.register(ChartDataLabels);
+
+            const DATA = {
+                scoring: {
+                    quant: 10,
+                    stability: 10,
+                    qual: 80
+                },
+                comparison: {
+                    quant: {
+                        purpose: "객관적 성능 수치 확보",
+                        method: "표준 차트, 측정 장비 사용",
+                        pros: "일관성, 재현성 우수, 인원 리소스 소모 적음",
+                        cons: "사용자 체감 반영 한계",
+                        necessity: "기본 성능 기준 및 제품 간 비교"
+                    },
+                    qual: {
+                        purpose: "사용자 체감 및 실사용 환경 반영",
+                        method: "실제 촬영 결과 비교, 사용자 설문 (블라인드 테스트)",
+                        pros: "사용자 인식과 현실적인 피드백 반영",
+                        cons: "평가자 별 편차 및 일관성 부족 가능, 리소스 소모 큼",
+                        necessity: "실제 사용 만족도 및 감성 요소 보완"
+                    }
+                },
+                timeline: [
+                    { dept: "연구소", days: 7, task: "암실 (정량) - 기초 성능 측정" },
+                    { dept: "QA", days: 2, task: "FW 시험 - 기능적 안정성 검증" },
+                    { dept: "QA", days: 10, task: "야외 촬영 - 실제 환경 화질 측정" },
+                    { dept: "QA", days: 7, task: "평가 및 피드백 - KPI 종합 및 이슈 전달" },
+                    { dept: "연구소", days: 3, task: "보완 - FW 수정 및 개선 (FAIL 시)" },
+                    { dept: "QA", days: 1, task: "확인 - 최종 승인 및 자료 백업 (PASS 시)" }
+                ],
+                metrics: [
+                    { category: "렌즈/해상력", item: "Uniformity (균일성)", standard: "Corners Mean: 60% 이상" },
+                    { category: "렌즈/해상력", item: "Resolution (MTF)", standard: "1080P MTF50: 800 LW/PH 이상" },
+                    { category: "렌즈/해상력", item: "Distortion (왜곡)", standard: "TV Distortion: -23% ~ 0%" },
+                    { category: "색상/계조", item: "Color & Saturation", standard: "ΔE*ab mean ≤ 13" },
+                    { category: "색상/계조", item: "White Balance", standard: "ΔC (Zone 2-5) ≤ 1.5" },
+                    { category: "색상/계조", item: "Dynamic Range", standard: "50dB 이상" },
+                    { category: "노이즈", item: "Noise (10Lux)", standard: "23dB 이상 [Y]" }
+                ],
+                perception: [
+                    { factor: "노이즈", language: ["선명하다", "깨끗하다", "뚜렷하다"], color: 'bg-teal-100' },
+                    { factor: "다이내믹 레인지", language: ["흐릿하다", "밝다", "어둡다"], color: 'bg-indigo-100' },
+                    { factor: "해상도", language: ["선명하다", "뚜렷하다", "깨끗하다"], color: 'bg-orange-100' },
+                    { factor: "색재현력", language: ["선명하다", "뚜렷하다", "밝다"], color: 'bg-pink-100' }
+                ]
+            };
+
+            // 1. Scoring Donut Chart Initialization
+            const ctx = document.getElementById('scoringChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['정성 평가 (Qual)', '정량 평가 (Quant)', 'FW 안정성'],
+                    datasets: [{
+                        data: [DATA.scoring.qual, DATA.scoring.quant, DATA.scoring.stability],
+                        backgroundColor: ['#047857', '#34d399', '#fef3c7'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 14 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) { label += context.parsed + '%'; }
+                                    return label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: (value, context) => {
+                                return value > 0 ? value + '%' : '';
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // 2. Interactive Comparison Logic
+            const compContent = document.getElementById('comparisonContent');
+            const btnQuant = document.getElementById('btnQuant');
+            const btnQual = document.getElementById('btnQual');
+
+            const renderComparison = (type) => {
+                const data = DATA.comparison[type];
+                const isQuant = type === 'quant';
+                const color = isQuant ? 'border-teal-400 bg-teal-50' : 'border-indigo-400 bg-indigo-50';
+                
+                compContent.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ${color} p-4 rounded-lg transition-all duration-300">
+                        <div class="space-y-3">
+                            <div><span class="font-semibold block text-sm text-gray-600">🎯 목적</span><p class="font-bold text-lg text-teal-800">${data.purpose}</p></div>
+                            <div><span class="font-semibold block text-sm text-gray-600">📝 방법</span><p>${data.method}</p></div>
+                        </div>
+                        <div class="space-y-3">
+                            <div><span class="font-semibold block text-sm text-gray-600">📊 장점</span><p class="text-green-700">${data.pros}</p></div>
+                            <div><span class="font-semibold block text-sm text-gray-600">🧩 단점</span><p class="text-red-700">${data.cons}</p></div>
+                        </div>
+                    </div>
+                `;
+                
+                [btnQuant, btnQual].forEach(btn => btn.classList.remove('bg-teal-500', 'text-white', 'bg-gray-200', 'text-gray-700'));
+                if (isQuant) {
+                    btnQuant.classList.add('bg-teal-500', 'text-white');
+                    btnQual.classList.add('bg-gray-200', 'text-gray-700');
+                } else {
+                    btnQual.classList.add('bg-teal-500', 'text-white');
+                    btnQuant.classList.add('bg-gray-200', 'text-gray-700');
+                }
+            };
+
+            btnQuant.addEventListener('click', () => renderComparison('quant'));
+            btnQual.addEventListener('click', () => renderComparison('qual'));
+            
+            // Initial render
+            renderComparison('quant');
+
+            // 3. Timeline Rendering
+            const timelineContainer = document.getElementById('timelineContainer');
+            DATA.timeline.forEach((step, index) => {
+                timelineContainer.innerHTML += `
+                    <div class="flex">
+                        <div class="flex flex-col items-center mr-4">
+                            <div class="w-10 h-10 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-sm shadow-md">${step.days}일</div>
+                            ${index < DATA.timeline.length - 1 ? '<div class="w-0.5 h-full bg-gray-200 min-h-[30px]"></div>' : ''}
+                        </div>
+                        <div class="flex-1 pt-1 pb-4">
+                            <p class="text-sm text-gray-500">${step.dept} 담당</p>
+                            <p class="font-semibold text-gray-800">${step.task}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 4. Tab Logic (Metrics vs. Perception)
+            const tabMetrics = document.getElementById('tabMetrics');
+            const tabPerception = document.getElementById('tabPerception');
+            const metricsView = document.getElementById('metricsView');
+            const perceptionView = document.getElementById('perceptionView');
+
+            const activateTab = (active, inactive) => {
+                active.classList.remove('text-gray-500', 'border-transparent', 'hover:border-gray-300');
+                active.classList.add('text-gray-700', 'border-teal-500');
+                inactive.classList.remove('text-gray-700', 'border-teal-500');
+                inactive.classList.add('text-gray-500', 'border-transparent', 'hover:border-gray-300');
+            };
+
+            tabMetrics.addEventListener('click', () => {
+                activateTab(tabMetrics, tabPerception);
+                metricsView.classList.remove('hidden');
+                perceptionView.classList.add('hidden');
+            });
+
+            tabPerception.addEventListener('click', () => {
+                activateTab(tabPerception, tabMetrics);
+                perceptionView.classList.remove('hidden');
+                metricsView.classList.add('hidden');
+            });
+            
+            // 5. Metrics Table Rendering (Initial Tab Content)
+            const metricsTableContainer = document.getElementById('metricsTableContainer');
+            let tableHTML = `<table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목 분류</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">세부 항목</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주요 판정 기준 (예시)</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">`;
+            
+            DATA.metrics.forEach((m) => {
+                tableHTML += `
+                    <tr>
+                        <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${m.category}</td>
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700">${m.item}</td>
+                        <td class="px-4 py-2 text-sm text-teal-600">${m.standard}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            metricsTableContainer.innerHTML = tableHTML;
+
+            // 6. Perception Accordion Rendering
+            const perceptionAccordion = document.getElementById('perceptionAccordion');
+
+            DATA.perception.forEach((p, index) => {
+                const id = `perception-${index}`;
+                const termsHtml = p.language.map(term => 
+                    `<span class="inline-block px-3 py-1 text-sm font-medium rounded-full ${p.color} text-gray-800">${term}</span>`
+                ).join('');
+
+                perceptionAccordion.innerHTML += `
+                    <div class="border border-gray-200 rounded-lg">
+                        <button class="w-full flex justify-between items-center p-4 text-left font-semibold text-gray-700 transition-colors duration-200 hover:bg-gray-50" 
+                                aria-expanded="false" aria-controls="${id}-content" data-accordion-target="${id}">
+                            <span class="flex items-center">
+                                <span class="text-teal-500 mr-2 text-xl">#</span>
+                                ${p.factor} 개선 시 사용자 인지 언어 분석
+                            </span>
+                            <span class="accordion-icon transition-transform transform rotate-0">&#9654;</span>
+                        </button>
+                        <div id="${id}-content" class="px-4 pt-0 overflow-hidden max-h-0 transition-all duration-300 ease-in-out">
+                            <div class="pb-4 space-x-2">
+                                <span class="text-sm font-medium text-gray-600 mr-2">상위 3순위 지각 언어:</span>
+                                ${termsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 7. Accordion Interaction Logic
+            perceptionAccordion.querySelectorAll('[data-accordion-target]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-accordion-target');
+                    const content = document.getElementById(`${targetId}-content`);
+                    const icon = button.querySelector('.accordion-icon');
+                    
+                    const isExpanded = button.getAttribute('aria-expanded') === 'true' || false;
+
+                    // Toggle the clicked accordion
+                    button.setAttribute('aria-expanded', !isExpanded);
+                    if (isExpanded) {
+                        content.style.maxHeight = 0;
+                        content.classList.remove('pt-3');
+                        icon.classList.remove('rotate-90');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.classList.add('pt-3');
+                        icon.classList.add('rotate-90');
+                    }
+
+                    // Close others
+                    perceptionAccordion.querySelectorAll('[data-accordion-target]').forEach(otherButton => {
+                        if (otherButton !== button) {
+                            const otherId = otherButton.getAttribute('data-accordion-target');
+                            const otherContent = document.getElementById(`${otherId}-content`);
+                            const otherIcon = otherButton.querySelector('.accordion-icon');
+
+                            otherButton.setAttribute('aria-expanded', 'false');
+                            otherContent.style.maxHeight = 0;
+                            otherContent.classList.remove('pt-3');
+                            otherIcon.classList.remove('rotate-90');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
